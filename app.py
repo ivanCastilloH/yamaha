@@ -470,7 +470,7 @@ def enviar_codigo():
 
     try:
         if USE_SENDGRID_API:
-            success = enviar_correo_sendgrid(email, "Código de verificación MotoPower", mensaje.body)
+            success = enviar_correo_sendgrid(email, "Código de verificación MotoPower", msg.body)
         else:
             # Creamos el objeto del mensaje
             msg = Message(
@@ -652,20 +652,19 @@ def login_usuario():
         # Enviar código por email
         try:
             if USE_SENDGRID_API:
-                success = enviar_correo_sendgrid(email, "Código de verificación de dos pasos - MotoPower", mensaje.body)
+                success = enviar_correo_sendgrid(email, "Código de verificación...")
             else:
-                mail.send(mensaje)
-            
+                mail.send(msg) # <--- Asegúrate que diga msg
+
             return jsonify({
                 "mensaje": "Credenciales válidas. Código 2FA enviado al correo.",
                 "requiere_2fa": True,
                 "usuario": email
             }), 200
-            
+
         except Exception as e:
             print(f"Error enviando 2FA: {repr(e)}")
-            return jsonify({"mensaje": "Error enviando código de verificación", "error": str(e)}), 500
-            
+            return jsonify({"mensaje": "Error enviando código", "error": str(e)}), 500
     else:
         return jsonify({"mensaje": "Credenciales inválidas"}), 401
 
