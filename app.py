@@ -65,15 +65,7 @@ def enviar_correo_sendgrid(to_email, subject, body):
 
 
 # Debug: Imprimir configuración de correo (sin password por seguridad)
-print("MAIL CONFIG:")
-print(f"  SERVER: {app.config['MAIL_SERVER']}")
-print(f"  PORT: {app.config['MAIL_PORT']}")
-print(f"  USE_TLS: {app.config['MAIL_USE_TLS']}")
-print(f"  USE_SSL: {app.config['MAIL_USE_SSL']}")
-print(f"  USERNAME: {app.config['MAIL_USERNAME']}")
-print(f"  DEFAULT_SENDER: {app.config['MAIL_DEFAULT_SENDER']}")
-print(f"  DEBUG: {app.config['MAIL_DEBUG']}")
-print(f"  SUPPRESS_SEND: {app.config['MAIL_SUPPRESS_SEND']}")
+
 
 
 # Configuración de reCAPTCHA
