@@ -17,9 +17,9 @@ app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
 app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', 587))
 app.config['MAIL_USE_TLS'] = os.environ.get('MAIL_USE_TLS', 'True').lower() == 'true'
 app.config['MAIL_USE_SSL'] = os.environ.get('MAIL_USE_SSL', 'False').lower() == 'true'
-app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
-app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER')
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME', 'ivanricardo65@gmail.com')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD', 'sbcs vtpa freo ibdz')
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER', app.config['MAIL_USERNAME'])
 
 # Configuración para SendGrid API (alternativa a SMTP)
 SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
@@ -29,16 +29,14 @@ mail = Mail(app)
 CORS(app) 
 
 # Debug: Imprimir configuración de correo (sin password por seguridad)
-# print("MAIL CONFIG:")
-# print(f"  SERVER: {app.config['MAIL_SERVER']}")
-# print(f"  PORT: {app.config['MAIL_PORT']}")
-# print(f"  USE_TLS: {app.config['MAIL_USE_TLS']}")
-# print(f"  USE_SSL: {app.config['MAIL_USE_SSL']}")
-# print(f"  USERNAME: {app.config['MAIL_USERNAME']}")
-# print(f"  DEFAULT_SENDER: {app.config['MAIL_DEFAULT_SENDER']}")
-# print(f"  DEBUG: {app.config['MAIL_DEBUG']}")
-# print(f"  SUPPRESS_SEND: {app.config['MAIL_SUPPRESS_SEND']}")
-# print(f"  USE_SENDGRID_API: {USE_SENDGRID_API}")
+print("MAIL CONFIG:")
+print(f"  SERVER: {app.config['MAIL_SERVER']}")
+print(f"  PORT: {app.config['MAIL_PORT']}")
+print(f"  USE_TLS: {app.config['MAIL_USE_TLS']}")
+print(f"  USE_SSL: {app.config['MAIL_USE_SSL']}")
+print(f"  USERNAME: {app.config['MAIL_USERNAME']}")
+print(f"  DEFAULT_SENDER: {app.config['MAIL_DEFAULT_SENDER']}")
+print(f"  USE_SENDGRID_API: {USE_SENDGRID_API}")
 
 def enviar_correo_sendgrid(to_email, subject, body):
     """Envía correo usando SendGrid API"""
@@ -469,14 +467,15 @@ def enviar_codigo():
     CODIGOS_VERIFICACION[email] = codigo
 
     try:
+        body = f"Tu código de verificación es: {codigo}"
         if USE_SENDGRID_API:
-            success = enviar_correo_sendgrid(email, "Código de verificación MotoPower", msg.body)
+            enviar_correo_sendgrid(email, "Código de verificación MotoPower", body)
         else:
             # Creamos el objeto del mensaje
             msg = Message(
                 subject="Código de verificación Motos Chingonas",
                 recipients=[email],
-                body=f"Tu código de verificación es: {codigo}"
+                body=body
             )
             # Enviamos el objeto 'msg'
             mail.send(msg)
@@ -651,10 +650,31 @@ def login_usuario():
         
         # Enviar código por email
         try:
+            body = f"""
+Hola,
+
+Alguien está intentando acceder a tu cuenta en MotoPower.
+
+Tu código de verificación de dos pasos es:
+
+{codigo_2fa}
+
+Ingresa este código para completar el inicio de sesión.
+
+Si no fuiste tú, ignora este mensaje.
+
+Saludos,
+Equipo MotoPower
+"""
             if USE_SENDGRID_API:
-                success = enviar_correo_sendgrid(email, "Código de verificación...")
+                enviar_correo_sendgrid(email, "Código de verificación de dos pasos - MotoPower", body)
             else:
-                mail.send(msg) # <--- Asegúrate que diga msg
+                msg = Message(
+                    subject="Código de verificación de dos pasos - MotoPower",
+                    recipients=[email],
+                    body=body
+                )
+                mail.send(msg)
 
             return jsonify({
                 "mensaje": "Credenciales válidas. Código 2FA enviado al correo.",
