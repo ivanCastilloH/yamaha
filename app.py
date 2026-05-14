@@ -19,6 +19,7 @@ app.config['MAIL_USE_TLS'] = os.environ.get('MAIL_USE_TLS', 'True').lower() == '
 app.config['MAIL_USE_SSL'] = os.environ.get('MAIL_USE_SSL', 'False').lower() == 'true'
 app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER')
 
 # Configuración para SendGrid API (alternativa a SMTP)
 SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
@@ -479,7 +480,14 @@ def enviar_codigo():
         if USE_SENDGRID_API:
             success = enviar_correo_sendgrid(email, "Código de verificación MotoPower", mensaje.body)
         else:
-            mail.send(mensaje)
+            # Creamos el objeto del mensaje
+            msg = Message(
+                subject="Código de verificación Motos Chingonas",
+                recipients=[email],
+                body=f"Tu código de verificación es: {codigo}"
+            )
+            # Enviamos el objeto 'msg'
+            mail.send(msg)
 
         return jsonify({
             "mensaje": "Código enviado al correo"
