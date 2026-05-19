@@ -13,27 +13,20 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import random
 import os
 app = Flask(__name__)
-app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
-app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', 587))
-app.config['MAIL_USE_TLS'] = os.environ.get('MAIL_USE_TLS', 'True').lower() == 'true'
-app.config['MAIL_USE_SSL'] = os.environ.get('MAIL_USE_SSL', 'False').lower() == 'true'
-app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
-app.config['MAIL_DEFAULT_SENDER'] = app.config['MAIL_USERNAME']
+app.config['MAIL_SERVER'] = 'smtp.sendgrid.net'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'apikey'
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = 'tucorreo@gmail.com'
 # Configuración para SendGrid API (alternativa a SMTP)
 SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
 USE_SENDGRID_API = bool(SENDGRID_API_KEY)
 
-mail = Mail(app)
+
 CORS(app) 
 from threading import Thread
 
-def send_async_email(app, msg):
-    with app.app_context():
-        mail.send(msg)
-
-def send_email(msg):
-    Thread(target=send_async_email, args=(app, msg)).start()
 # Debug: Imprimir configuración de correo (sin password por seguridad)
 print("MAIL CONFIG:")
 print(f"  SERVER: {app.config['MAIL_SERVER']}")
