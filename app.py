@@ -28,14 +28,7 @@ CORS(app)
 from threading import Thread
 
 # Debug: Imprimir configuración de correo (sin password por seguridad)
-print("MAIL CONFIG:")
-print(f"  SERVER: {app.config['MAIL_SERVER']}")
-print(f"  PORT: {app.config['MAIL_PORT']}")
-print(f"  USE_TLS: {app.config['MAIL_USE_TLS']}")
-print(f"  USE_SSL: {app.config['MAIL_USE_SSL']}")
-print(f"  USERNAME: {app.config['MAIL_USERNAME']}")
-print(f"  DEFAULT_SENDER: {app.config['MAIL_DEFAULT_SENDER']}")
-print(f"  USE_SENDGRID_API: {USE_SENDGRID_API}")
+
 
 def enviar_correo_sendgrid(to_email, subject, body):
     """Envía correo usando SendGrid API"""
