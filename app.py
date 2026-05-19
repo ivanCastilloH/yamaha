@@ -7,7 +7,7 @@ from flask import Flask, request, jsonify, session
 import unicodedata
 import re
 import requests
-from flask_mail import Mail, Message
+
 import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 import random
@@ -459,22 +459,28 @@ def enviar_codigo():
     CODIGOS_VERIFICACION[email] = codigo
 
     try:
+
         body = f"Tu código de verificación es: {codigo}"
-        if USE_SENDGRID_API:
-            enviar_correo_sendgrid(email, "Código de verificación MotoPower", body)
-        else:
-            # Creamos el objeto del mensaje
-            msg = Message(
-                subject="Código de verificación Motos Chingonas",
-                recipients=[email],
-                body=body
-            )
-            # Enviamos el objeto 'msg'
-    enviar_correo_sendgrid(
-        correo,
-    "Código de verificación",
-    f"Tu código es: {codigo}"
-)
+
+        enviar_correo_sendgrid(
+            email,
+            "Código de verificación MotoPower",
+            body
+        )
+
+        return jsonify({
+            "mensaje": "Código enviado al correo"
+        })
+
+    except Exception as e:
+
+        print("Error enviando correo:", repr(e))
+
+        return jsonify({
+            "mensaje": "Error enviando correo"
+        }), 500       
+            
+
 @app.route('/api/verificar-codigo', methods=['POST'])
 def verificar_codigo():
 
@@ -650,14 +656,7 @@ Si no fuiste tú, ignora este mensaje.
 Saludos,
 Equipo MotoPower
 """
-            if USE_SENDGRID_API:
-                enviar_correo_sendgrid(email, "Código de verificación de dos pasos - MotoPower", body)
-            else:
-                msg = Message(
-                    subject="Código de verificación de dos pasos - MotoPower",
-                    recipients=[email],
-                    body=body
-                )
+            
     enviar_correo_sendgrid(
     email,
     "Código de verificación",
