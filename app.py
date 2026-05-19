@@ -470,19 +470,11 @@ def enviar_codigo():
                 body=body
             )
             # Enviamos el objeto 'msg'
-            send_email(msg)
-
-        return jsonify({
-            "mensaje": "Código enviado al correo"
-        })
-
-    except Exception as e:
-        print("Error enviando correo:", repr(e))
-
-        return jsonify({
-            "mensaje": "Error enviando correo",
-            "error": str(e)
-        }), 500
+    enviar_correo_sendgrid(
+        correo,
+    "Código de verificación",
+    f"Tu código es: {codigo}"
+)
 @app.route('/api/verificar-codigo', methods=['POST'])
 def verificar_codigo():
 
@@ -666,19 +658,11 @@ Equipo MotoPower
                     recipients=[email],
                     body=body
                 )
-                mail.send(msg)
-
-            return jsonify({
-                "mensaje": "Credenciales válidas. Código 2FA enviado al correo.",
-                "requiere_2fa": True,
-                "usuario": email
-            }), 200
-
-        except Exception as e:
-            print(f"Error enviando 2FA: {repr(e)}")
-            return jsonify({"mensaje": "Error enviando código", "error": str(e)}), 500
-    else:
-        return jsonify({"mensaje": "Credenciales inválidas"}), 401
+    enviar_correo_sendgrid(
+    email,
+    "Código de verificación",
+    f"Tu código es: {codigo_2fa}"
+)
 
 @app.route('/api/inventario', methods=['GET'])
 def obtener_inventario():
