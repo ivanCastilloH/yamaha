@@ -20,7 +20,7 @@ app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = 'apikey'
 app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
-app.config['MAIL_DEFAULT_SENDER'] = 'ivanricardo65@gmai.com'
+app.config['MAIL_DEFAULT_SENDER'] = 'ivanricardo65@gmail.com'
 # Configuración para SendGrid API (alternativa a SMTP)
 SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
 USE_SENDGRID_API = bool(SENDGRID_API_KEY)
