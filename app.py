@@ -1,5 +1,7 @@
 # app.py
 
+import email
+
 from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS 
 from flask import request, jsonify
@@ -631,16 +633,23 @@ def login_usuario():
     check_password_hash(USUARIOS[email]["password"], password)
     
 ):
-        # Generar código 2FA
+     if (
+        email in USUARIOS and
+        check_password_hash(USUARIOS[email]["password"], password)
+    ):
+
+    # Generar código 2FA
         codigo_2fa = str(random.randint(100000, 999999))
-        CODIGOS_2FA[email] = {
-            'codigo': codigo_2fa,
-            'timestamp': datetime.datetime.now()
-        }
-        
-        # Enviar código por email
-        try:
-            body = f"""
+
+    CODIGOS_2FA[email] = {
+        'codigo': codigo_2fa,
+        'timestamp': datetime.datetime.now()
+    }
+
+    # Enviar código por email
+    try:
+
+        body = f"""
 Hola,
 
 Alguien está intentando acceder a tu cuenta en MotoPower.
@@ -656,13 +665,26 @@ Si no fuiste tú, ignora este mensaje.
 Saludos,
 Equipo MotoPower
 """
-            
-    enviar_correo_sendgrid(
-    email,
-    "Código de verificación",
-    f"Tu código es: {codigo_2fa}"
-)
 
+        enviar_correo_sendgrid(
+            email,
+            "Código de verificación de dos pasos - MotoPower",
+            body
+        )
+
+        return jsonify({
+            "mensaje": "Credenciales válidas. Código 2FA enviado al correo.",
+            "requiere_2fa": True,
+            "usuario": email
+        }), 200
+
+    except Exception as e:
+
+        print("Error enviando correo:", e)
+
+        return jsonify({
+            "mensaje": "Error enviando código 2FA"
+        }), 500
 @app.route('/api/inventario', methods=['GET'])
 def obtener_inventario():
     if not es_admin(request):
